@@ -1,0 +1,51 @@
+version: "3.5"
+services:
+  c1ctf-docker-manager:
+    image: c1ctf-docker-manager:1.0.0 # 镜像名必填，要指定版本号
+    build: "."
+    ports:
+      - 5000:5000
+    restart: always
+    environment:
+      DOCKER_HOST: unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../:/docker-manager
+      - ../data/compose:/data/compose                # docker-compose 目录
+      - /data/nfs:/data/flag                   # 自动生成flag的保存目录
+    # entrypoint: ['python3', '/docker-manager/app.py']
+    entrypoint: ['hypercorn', 'app:app', '-b', '0.0.0.0:5000']
+    depends_on:
+      - c1ctf-docker-manager-db
+#  c1ctf-docker-manager-db:
+#    image: mysql
+#    restart: always
+#    command: --default-authentication-plugin=mysql_native_password
+#    volumes:
+#      - type: bind
+#        source: ./db.init/init.sql
+#        target: /docker-entrypoint-initdb.d/init.sql
+#    environment:
+#      MYSQL_ROOT_PASSWORD: mysql_root
+#    healthcheck:
+#      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+#      timeout: 20s
+#      retries: 10
+  c1ctf-docker-manager-db:
+    image: postgres
+    restart: always
+    volumes:
+      - type: bind
+        source: ./db.init/init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres_root
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD", "pg_isready -U postgres"]
+      timeout: 20s
+      retries: 10
+volumes:
+  db-data:

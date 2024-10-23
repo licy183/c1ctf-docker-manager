@@ -1,0 +1,8 @@
+Quart~=0.13.1
+PyYAML~=5.3.1
+docker-py~=1.10.6
+asynctest~=0.13.0
+WTForms~=2.3.3
+APScheduler~=3.6.3
+tortoise-orm~=0.16.17
+Hypercorn~=0.11.1

@@ -1,0 +1,22 @@
+version: "3.5"
+services:
+  test:
+    image: test:1.0.0   # 镜像名必填，要指定版本号
+    build: "."
+    ports:
+      - target: 80
+        protocol: tcp
+#        mode: ingress # host
+    restart: always
+    volumes:
+      - flag-test-a34c:/flag
+  test2:
+    image: test:1.0.0
+    restart: always
+
+volumes:
+  flag-test-a34c: # 必须包含flag字样，同时保证不与其他题目重复
+#    driver_opts:
+#      type: nfs4
+#      o: addr=127.0.0.1,nolock,soft,ro
+#      device: :/1-11
